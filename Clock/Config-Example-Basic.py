@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 from GoogleMercatorProjection import LatLng
 from PyQt4.QtGui import QColor
 
@@ -13,14 +14,14 @@ wulocation = LatLng(primary_coordinates[0], primary_coordinates[1])
 primary_location = LatLng(primary_coordinates[0], primary_coordinates[1])
 noaastream = 'http://audioplayer.wunderground.com:80/tim273/edina'
 background = 'images/bb.jpg'
-squares1 = 'images/squares1-white.png'
-squares2 = 'images/squares2-white.png'
+squares1 = 'images/squares1-kevin.png'
+squares2 = 'images/squares2-kevin.png'
 icons = 'icons-darkwhite'
 textcolor = '#ffffff'
 clockface = 'images/clockface3-darkwhite.png'
-hourhand = 'images/hourhand-darkwhite.png'
-minhand = 'images/minhand-darkwhite.png'
-sechand = 'images/sechand-darkwhite.png'
+hourhand = 'images/hourhand.png'
+minhand = 'images/minhand.png'
+sechand = 'images/sechand.png'
 
 digital = 0             # 1 = Digtal Clock, 0 = Analog Clock
 
@@ -45,7 +46,7 @@ metric = 1
 clockEnabled = 1
 
 # 0 = Weather disabled, 1 Weather enabled
-weatherEnabled = 0
+weatherEnabled = 1
 
 # 0 = Radar disabled, 1 Radar enabled
 radarEnabled = 0
@@ -84,19 +85,19 @@ wuLanguage = "FR"
 DateLocale = ''
 
 # Language specific wording
-LPressure = "Pressure "
-LHumidity = "Humidity "
-LWind = "Wind "
+LPressure = "Pression "
+LHumidity = u"Humidité "
+LWind = "Vent "
 Lgusting = " gusting "
-LFeelslike = "Feels like "
-LPrecip1hr = " Precip 1hr:"
-LToday = "Today: "
-LSunRise = "Sun Rise:"
-LSet = " Set: "
-LMoonPhase = " Moon Phase:"
-LInsideTemp = "Inside Temp "
-LRain = " Rain: "
-LSnow = " Snow: "
+LFeelslike = "Ressenti "
+LPrecip1hr = " Pr 1hr:"
+LToday = "Aujourd'hui: "
+LSunRise = "Lever soleil:"
+LSet = " Coucher: "
+LMoonPhase = " Phase de lune:"
+LInsideTemp = u"Température intérieure "
+LRain = " Pluie: "
+LSnow = " Neige: "
 
 
 # RADAR

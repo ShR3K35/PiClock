@@ -110,6 +110,7 @@ def tick():
     if now.day != lastday:
         lastday = now.day
         ds = "{0:%A} {0.day} {0:%B} {0.year}".format(now)
+        ds=ds.title()
         datex.setText(ds)
         datex2.setText(ds)
 
@@ -192,7 +193,7 @@ def wxfinished():
                      str(f['wind_kph']) +
                      Config.Lgusting +
                      str(f['wind_gust_kph']))
-        wind2.setText(Config.LFeelslike + str(f['feelslike_c']))
+        wind2.setText(Config.LFeelslike + str(f['feelslike_c']) + u'°C')
         wdate.setText("{0:%H:%M}".format(datetime.datetime.fromtimestamp(
             int(f['local_epoch']))) +
             Config.LPrecip1hr + f['precip_1hr_metric'] + 'mm ' +
@@ -243,7 +244,7 @@ def wxfinished():
             wx = fl.findChild(QtGui.QLabel, "wx")
             wx.setText(f['condition'])
             day = fl.findChild(QtGui.QLabel, "day")
-            day.setText(f['FCTTIME']['weekday_name'] + ' ' + f['FCTTIME']['civil'])
+            day.setText(f['FCTTIME']['weekday_name'].title() + ' ' + f['FCTTIME']['hour'] + ':' + f['FCTTIME']['min'])
             wx2 = fl.findChild(QtGui.QLabel, "wx2")
             s = ''
             if float(f['pop']) > 0.0:
@@ -265,8 +266,8 @@ def wxfinished():
 
             wx2.setText(s)
 
-        for i in range(3, 9):
-            f = wxdata['forecast']['simpleforecast']['forecastday'][i - 3]
+        for i in range(3, 5):
+            f = wxdata['forecast']['simpleforecast']['forecastday'][i - 2]
             fl = forecast[i]
             icon = fl.findChild(QtGui.QLabel, "icon")
             wxiconpixmap = QtGui.QPixmap(Config.icons + "/" + f['icon'] + ".png")
@@ -840,14 +841,7 @@ if Config.radarEnabled:
         "#squares1 { background-color: transparent; border-image: url(" +
         Config.squares1 +
         ") 0 0 0 0 stretch stretch;}")
-if Config.weatherEnabled:
-    squares2 = QtGui.QFrame(frame1)
-    squares2.setObjectName("squares2")
-    squares2.setGeometry(width - xscale * 340, 0, xscale * 340, yscale * 900)
-    squares2.setStyleSheet(
-        "#squares2 { background-color: transparent; border-image: url(" +
-        Config.squares2 +
-        ") 0 0 0 0 stretch stretch;}")
+
 if Config.clockEnabled:
     if not Config.digital:
         clockface = QtGui.QFrame(frame1)
@@ -958,7 +952,8 @@ datey2.setStyleSheet("#datey2 { font-family:sans-serif; color: " +
 datey2.setAlignment(Qt.AlignHCenter | Qt.AlignTop)
 datey2.setGeometry(800 * xscale, 840 * yscale, 640 * xscale, 100)
 
-ypos = -25
+ypos = 20
+
 wxicon = QtGui.QLabel(frame1)
 wxicon.setObjectName("wxicon")
 wxicon.setStyleSheet("#wxicon { background-color: transparent; }")
@@ -969,7 +964,7 @@ wxicon2.setObjectName("wxicon2")
 wxicon2.setStyleSheet("#wxicon2 { background-color: transparent; }")
 wxicon2.setGeometry(0 * xscale, 750 * yscale, 150 * xscale, 150 * yscale)
 
-ypos += 130
+ypos += 150
 wxdesc = QtGui.QLabel(frame1)
 wxdesc.setObjectName("wxdesc")
 wxdesc.setStyleSheet("#wxdesc { background-color: transparent; color: " +
@@ -994,7 +989,7 @@ wxdesc2.setStyleSheet("#wxdesc2 { background-color: transparent; color: " +
 wxdesc2.setAlignment(Qt.AlignLeft | Qt.AlignTop)
 wxdesc2.setGeometry(400 * xscale, 800 * yscale, 400 * xscale, 100)
 
-ypos += 25
+ypos += 100
 temper = QtGui.QLabel(frame1)
 temper.setObjectName("temper")
 temper.setStyleSheet("#temper { background-color: transparent; color: " +
@@ -1019,7 +1014,7 @@ temper2.setStyleSheet("#temper2 { background-color: transparent; color: " +
 temper2.setAlignment(Qt.AlignHCenter | Qt.AlignTop)
 temper2.setGeometry(125 * xscale, 780 * yscale, 300 * xscale, 100)
 
-ypos += 80
+ypos += 100
 press = QtGui.QLabel(frame1)
 press.setObjectName("press")
 press.setStyleSheet("#press { background-color: transparent; color: " +
@@ -1032,7 +1027,7 @@ press.setStyleSheet("#press { background-color: transparent; color: " +
 press.setAlignment(Qt.AlignHCenter | Qt.AlignTop)
 press.setGeometry(3 * xscale, ypos * yscale, 300 * xscale, 100)
 
-ypos += 30
+ypos += 100
 humidity = QtGui.QLabel(frame1)
 humidity.setObjectName("humidity")
 humidity.setStyleSheet("#humidity { background-color: transparent; color: " +
@@ -1045,7 +1040,7 @@ humidity.setStyleSheet("#humidity { background-color: transparent; color: " +
 humidity.setAlignment(Qt.AlignHCenter | Qt.AlignTop)
 humidity.setGeometry(3 * xscale, ypos * yscale, 300 * xscale, 100)
 
-ypos += 30
+ypos += 100
 wind = QtGui.QLabel(frame1)
 wind.setObjectName("wind")
 wind.setStyleSheet("#wind { background-color: transparent; color: " +
@@ -1110,7 +1105,7 @@ temp.setGeometry(0, height - 100, width, 50)
 
 if Config.weatherEnabled:
     forecast = []
-    for i in range(0, 9):
+    for i in range(0, 5):
         lab = QtGui.QLabel(frame1)
         lab.setObjectName("forecast" + str(i))
         lab.setStyleSheet("QWidget { background-color: transparent; color: " +
@@ -1120,30 +1115,30 @@ if Config.weatherEnabled:
                           "px; " +
                           Config.fontattr +
                           "}")
-        lab.setGeometry(1137 * xscale, i * 100 * yscale,
-                        300 * xscale, 100 * yscale)
+        lab.setGeometry(1520 * xscale, i * 216 * yscale,
+                        400 * xscale, 216 * yscale)
 
         icon = QtGui.QLabel(lab)
         icon.setStyleSheet("#icon { background-color: transparent; }")
-        icon.setGeometry(0, 0, 100 * xscale, 100 * yscale)
+        icon.setGeometry(0, 0, 120 * xscale, 120 * yscale)
         icon.setObjectName("icon")
 
         wx = QtGui.QLabel(lab)
         wx.setStyleSheet("#wx { background-color: transparent; }")
-        wx.setGeometry(100 * xscale, 10 * yscale, 200 * xscale, 20 * yscale)
+        wx.setGeometry(120 * xscale, 35 * yscale, 280 * xscale, 20 * yscale)
         wx.setObjectName("wx")
 
         wx2 = QtGui.QLabel(lab)
         wx2.setStyleSheet("#wx2 { background-color: transparent; }")
-        wx2.setGeometry(100 * xscale, 30 * yscale, 200 * xscale, 100 * yscale)
+        wx2.setGeometry(120 * xscale, 55 * yscale, 280 * xscale, 55 * yscale)
         wx2.setAlignment(Qt.AlignLeft | Qt.AlignTop)
         wx2.setWordWrap(True)
         wx2.setObjectName("wx2")
 
         day = QtGui.QLabel(lab)
         day.setStyleSheet("#day { background-color: transparent; }")
-        day.setGeometry(100 * xscale, 75 * yscale, 200 * xscale, 25 * yscale)
-        day.setAlignment(Qt.AlignRight | Qt.AlignBottom)
+        day.setGeometry(120 * xscale, 10 * yscale, 280 * xscale, 25 * yscale)
+        day.setAlignment(Qt.AlignLeft | Qt.AlignTop)
         day.setObjectName("day")
 
         forecast.append(lab)
