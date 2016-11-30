@@ -109,17 +109,7 @@ def tick():
 
     if now.day != lastday:
         lastday = now.day
-        # date
-        sup = 'th'
-        if (now.day == 1 or now.day == 21 or now.day == 31):
-            sup = 'st'
-        if (now.day == 2 or now.day == 22):
-            sup = 'nd'
-        if (now.day == 3 or now.day == 23):
-            sup = 'rd'
-        if Config.DateLocale != "":
-            sup = ""
-        ds = "{0:%A %B} {0.day}<sup>{1}</sup> {0.year}".format(now, sup)
+        ds = "{0:%A} {0.day} {0:%B} {0.year}".format(now)
         datex.setText(ds)
         datex2.setText(ds)
 
@@ -234,82 +224,82 @@ def wxfinished():
                    Config.LMoonPhase +
                    wxdata['moon_phase']['phaseofMoon']
                    )
+    if Config.weatherEnabled:
+        for i in range(0, 3):
+            f = wxdata['hourly_forecast'][i * 3 + 2]
+            fl = forecast[i]
+            iconurl = f['icon_url']
+            icp = ''
+            if (re.search('/nt_', iconurl)):
+                icp = 'n_'
+            icon = fl.findChild(QtGui.QLabel, "icon")
+            wxiconpixmap = QtGui.QPixmap(
+                Config.icons + "/" + icp + f['icon'] + ".png")
+            icon.setPixmap(wxiconpixmap.scaled(
+                icon.width(),
+                icon.height(),
+                Qt.IgnoreAspectRatio,
+                Qt.SmoothTransformation))
+            wx = fl.findChild(QtGui.QLabel, "wx")
+            wx.setText(f['condition'])
+            day = fl.findChild(QtGui.QLabel, "day")
+            day.setText(f['FCTTIME']['weekday_name'] + ' ' + f['FCTTIME']['civil'])
+            wx2 = fl.findChild(QtGui.QLabel, "wx2")
+            s = ''
+            if float(f['pop']) > 0.0:
+                s += f['pop'] + '% '
+            if Config.metric:
+                if float(f['snow']['metric']) > 0.0:
+                    s += Config.LSnow + f['snow']['metric'] + 'mm '
+                else:
+                    if float(f['qpf']['metric']) > 0.0:
+                        s += Config.LRain + f['qpf']['metric'] + 'mm '
+                s += f['temp']['metric'] + u'°C'
+            else:
+                if float(f['snow']['english']) > 0.0:
+                    s += Config.LSnow + f['snow']['english'] + 'in '
+                else:
+                    if float(f['qpf']['english']) > 0.0:
+                        s += Config.LRain + f['qpf']['english'] + 'in '
+                s += f['temp']['english'] + u'°F'
 
-    for i in range(0, 3):
-        f = wxdata['hourly_forecast'][i * 3 + 2]
-        fl = forecast[i]
-        iconurl = f['icon_url']
-        icp = ''
-        if (re.search('/nt_', iconurl)):
-            icp = 'n_'
-        icon = fl.findChild(QtGui.QLabel, "icon")
-        wxiconpixmap = QtGui.QPixmap(
-            Config.icons + "/" + icp + f['icon'] + ".png")
-        icon.setPixmap(wxiconpixmap.scaled(
-            icon.width(),
-            icon.height(),
-            Qt.IgnoreAspectRatio,
-            Qt.SmoothTransformation))
-        wx = fl.findChild(QtGui.QLabel, "wx")
-        wx.setText(f['condition'])
-        day = fl.findChild(QtGui.QLabel, "day")
-        day.setText(f['FCTTIME']['weekday_name'] + ' ' + f['FCTTIME']['civil'])
-        wx2 = fl.findChild(QtGui.QLabel, "wx2")
-        s = ''
-        if float(f['pop']) > 0.0:
-            s += f['pop'] + '% '
-        if Config.metric:
-            if float(f['snow']['metric']) > 0.0:
-                s += Config.LSnow + f['snow']['metric'] + 'mm '
-            else:
-                if float(f['qpf']['metric']) > 0.0:
-                    s += Config.LRain + f['qpf']['metric'] + 'mm '
-            s += f['temp']['metric'] + u'°C'
-        else:
-            if float(f['snow']['english']) > 0.0:
-                s += Config.LSnow + f['snow']['english'] + 'in '
-            else:
-                if float(f['qpf']['english']) > 0.0:
-                    s += Config.LRain + f['qpf']['english'] + 'in '
-            s += f['temp']['english'] + u'°F'
+            wx2.setText(s)
 
-        wx2.setText(s)
-
-    for i in range(3, 9):
-        f = wxdata['forecast']['simpleforecast']['forecastday'][i - 3]
-        fl = forecast[i]
-        icon = fl.findChild(QtGui.QLabel, "icon")
-        wxiconpixmap = QtGui.QPixmap(Config.icons + "/" + f['icon'] + ".png")
-        icon.setPixmap(wxiconpixmap.scaled(
-            icon.width(),
-            icon.height(),
-            Qt.IgnoreAspectRatio,
-            Qt.SmoothTransformation))
-        wx = fl.findChild(QtGui.QLabel, "wx")
-        wx.setText(f['conditions'])
-        day = fl.findChild(QtGui.QLabel, "day")
-        day.setText(f['date']['weekday'])
-        wx2 = fl.findChild(QtGui.QLabel, "wx2")
-        s = ''
-        if float(f['pop']) > 0.0:
-            s += str(f['pop']) + '% '
-        if Config.metric:
-            if float(f['snow_allday']['cm']) > 0.0:
-                s += Config.LSnow + str(f['snow_allday']['cm']) + 'cm '
+        for i in range(3, 9):
+            f = wxdata['forecast']['simpleforecast']['forecastday'][i - 3]
+            fl = forecast[i]
+            icon = fl.findChild(QtGui.QLabel, "icon")
+            wxiconpixmap = QtGui.QPixmap(Config.icons + "/" + f['icon'] + ".png")
+            icon.setPixmap(wxiconpixmap.scaled(
+                icon.width(),
+                icon.height(),
+                Qt.IgnoreAspectRatio,
+                Qt.SmoothTransformation))
+            wx = fl.findChild(QtGui.QLabel, "wx")
+            wx.setText(f['conditions'])
+            day = fl.findChild(QtGui.QLabel, "day")
+            day.setText(f['date']['weekday'])
+            wx2 = fl.findChild(QtGui.QLabel, "wx2")
+            s = ''
+            if float(f['pop']) > 0.0:
+                s += str(f['pop']) + '% '
+            if Config.metric:
+                if float(f['snow_allday']['cm']) > 0.0:
+                    s += Config.LSnow + str(f['snow_allday']['cm']) + 'cm '
+                else:
+                    if float(f['qpf_allday']['mm']) > 0.0:
+                        s += Config.LRain + str(f['qpf_allday']['mm']) + 'mm '
+                s += str(f['high']['celsius']) + '/' + \
+                    str(f['low']['celsius']) + u'°C'
             else:
-                if float(f['qpf_allday']['mm']) > 0.0:
-                    s += Config.LRain + str(f['qpf_allday']['mm']) + 'mm '
-            s += str(f['high']['celsius']) + '/' + \
-                str(f['low']['celsius']) + u'°C'
-        else:
-            if float(f['snow_allday']['in']) > 0.0:
-                s += Config.LSnow + str(f['snow_allday']['in']) + 'in '
-            else:
-                if float(f['qpf_allday']['in']) > 0.0:
-                    s += Config.LRain + str(f['qpf_allday']['in']) + 'in '
-            s += str(f['high']['fahrenheit']) + '/' + \
-                str(f['low']['fahrenheit']) + u'°F'
-        wx2.setText(s)
+                if float(f['snow_allday']['in']) > 0.0:
+                    s += Config.LSnow + str(f['snow_allday']['in']) + 'in '
+                else:
+                    if float(f['qpf_allday']['in']) > 0.0:
+                        s += Config.LRain + str(f['qpf_allday']['in']) + 'in '
+                s += str(f['high']['fahrenheit']) + '/' + \
+                    str(f['low']['fahrenheit']) + u'°F'
+            wx2.setText(s)
 
 
 def getwx():
@@ -345,13 +335,14 @@ def qtstart():
 
     gettemp()
 
+    """
     objradar1.start(Config.radar_refresh * 60)
     objradar1.wxstart()
     objradar2.start(Config.radar_refresh * 60)
     objradar2.wxstart()
     objradar3.start(Config.radar_refresh * 60)
     objradar4.start(Config.radar_refresh * 60)
-
+    """
     ctimer = QtCore.QTimer()
     ctimer.timeout.connect(tick)
     ctimer.start(1000)
@@ -714,7 +705,18 @@ try:
     Config.metric
 except AttributeError:
     Config.metric = 0
-
+try:
+    Config.clockEnabled
+except AttributeError:
+    Config.clockEnabled = 1
+try:
+    Config.weatherEnabled
+except AttributeError:
+    Config.weatherEnabled = 1
+try:
+    Config.radarEnabled
+except AttributeError:
+    Config.radarEnabled = 1
 try:
     Config.weather_refresh
 except AttributeError:
@@ -802,8 +804,8 @@ w.setStyleSheet("QWidget { background-color: black;}")
 # xscale = float(width)/fullbgpixmap.width()
 # yscale = float(height)/fullbgpixmap.height()
 
-xscale = float(width) / 1440.0
-yscale = float(height) / 900.0
+xscale = float(width) / 1920.0
+yscale = float(height) / 1080.0
 
 frames = []
 framep = 0
@@ -830,96 +832,96 @@ frames.append(frame2)
 #       url("+Config.background+") 0 0 0 0 stretch stretch;}")
 # frame3.setVisible(False)
 # frames.append(frame3)
-
-squares1 = QtGui.QFrame(frame1)
-squares1.setObjectName("squares1")
-squares1.setGeometry(0, height - yscale * 600, xscale * 340, yscale * 600)
-squares1.setStyleSheet(
-    "#squares1 { background-color: transparent; border-image: url(" +
-    Config.squares1 +
-    ") 0 0 0 0 stretch stretch;}")
-
-squares2 = QtGui.QFrame(frame1)
-squares2.setObjectName("squares2")
-squares2.setGeometry(width - xscale * 340, 0, xscale * 340, yscale * 900)
-squares2.setStyleSheet(
-    "#squares2 { background-color: transparent; border-image: url(" +
-    Config.squares2 +
-    ") 0 0 0 0 stretch stretch;}")
-
-if not Config.digital:
-    clockface = QtGui.QFrame(frame1)
-    clockface.setObjectName("clockface")
-    clockrect = QtCore.QRect(
-        width / 2 - height * .4,
-        height * .45 - height * .4,
-        height * .8,
-        height * .8)
-    clockface.setGeometry(clockrect)
-    clockface.setStyleSheet(
-        "#clockface { background-color: transparent; border-image: url(" +
-        Config.clockface +
+if Config.radarEnabled:
+    squares1 = QtGui.QFrame(frame1)
+    squares1.setObjectName("squares1")
+    squares1.setGeometry(0, height - yscale * 600, xscale * 340, yscale * 600)
+    squares1.setStyleSheet(
+        "#squares1 { background-color: transparent; border-image: url(" +
+        Config.squares1 +
         ") 0 0 0 0 stretch stretch;}")
+if Config.weatherEnabled:
+    squares2 = QtGui.QFrame(frame1)
+    squares2.setObjectName("squares2")
+    squares2.setGeometry(width - xscale * 340, 0, xscale * 340, yscale * 900)
+    squares2.setStyleSheet(
+        "#squares2 { background-color: transparent; border-image: url(" +
+        Config.squares2 +
+        ") 0 0 0 0 stretch stretch;}")
+if Config.clockEnabled:
+    if not Config.digital:
+        clockface = QtGui.QFrame(frame1)
+        clockface.setObjectName("clockface")
+        clockrect = QtCore.QRect(
+            width / 2 - height * .4,
+            height * .5 - height * .4,
+            height * .8,
+            height * .8)
+        clockface.setGeometry(clockrect)
+        clockface.setStyleSheet(
+            "#clockface { background-color: transparent; border-image: url(" +
+            Config.clockface +
+            ") 0 0 0 0 stretch stretch;}")
 
-    hourhand = QtGui.QLabel(frame1)
-    hourhand.setObjectName("hourhand")
-    hourhand.setStyleSheet("#hourhand { background-color: transparent; }")
+        hourhand = QtGui.QLabel(frame1)
+        hourhand.setObjectName("hourhand")
+        hourhand.setStyleSheet("#hourhand { background-color: transparent; }")
 
-    minhand = QtGui.QLabel(frame1)
-    minhand.setObjectName("minhand")
-    minhand.setStyleSheet("#minhand { background-color: transparent; }")
+        minhand = QtGui.QLabel(frame1)
+        minhand.setObjectName("minhand")
+        minhand.setStyleSheet("#minhand { background-color: transparent; }")
 
-    sechand = QtGui.QLabel(frame1)
-    sechand.setObjectName("sechand")
-    sechand.setStyleSheet("#sechand { background-color: transparent; }")
+        sechand = QtGui.QLabel(frame1)
+        sechand.setObjectName("sechand")
+        sechand.setStyleSheet("#sechand { background-color: transparent; }")
 
-    hourpixmap = QtGui.QPixmap(Config.hourhand)
-    hourpixmap2 = QtGui.QPixmap(Config.hourhand)
-    minpixmap = QtGui.QPixmap(Config.minhand)
-    minpixmap2 = QtGui.QPixmap(Config.minhand)
-    secpixmap = QtGui.QPixmap(Config.sechand)
-    secpixmap2 = QtGui.QPixmap(Config.sechand)
-else:
-    clockface = QtGui.QLabel(frame1)
-    clockface.setObjectName("clockface")
-    clockrect = QtCore.QRect(
-        width / 2 - height * .4,
-        height * .45 - height * .4,
-        height * .8,
-        height * .8)
-    clockface.setGeometry(clockrect)
-    dcolor = QColor(Config.digitalcolor).darker(0).name()
-    lcolor = QColor(Config.digitalcolor).lighter(120).name()
-    clockface.setStyleSheet(
-        "#clockface { background-color: transparent; font-family:sans-serif;" +
-        " font-weight: light; color: " +
-        lcolor +
-        "; background-color: transparent; font-size: " +
-        str(int(Config.digitalsize * xscale)) +
-        "px; " +
-        Config.fontattr +
-        "}")
-    clockface.setAlignment(Qt.AlignCenter)
-    clockface.setGeometry(clockrect)
-    glow = QtGui.QGraphicsDropShadowEffect()
-    glow.setOffset(0)
-    glow.setBlurRadius(50)
-    glow.setColor(QColor(dcolor))
-    clockface.setGraphicsEffect(glow)
+        hourpixmap = QtGui.QPixmap(Config.hourhand)
+        hourpixmap2 = QtGui.QPixmap(Config.hourhand)
+        minpixmap = QtGui.QPixmap(Config.minhand)
+        minpixmap2 = QtGui.QPixmap(Config.minhand)
+        secpixmap = QtGui.QPixmap(Config.sechand)
+        secpixmap2 = QtGui.QPixmap(Config.sechand)
+    else:
+        clockface = QtGui.QLabel(frame1)
+        clockface.setObjectName("clockface")
+        clockrect = QtCore.QRect(
+            width / 2 - height * .4,
+            height * .45 - height * .4,
+            height * .8,
+            height * .8)
+        clockface.setGeometry(clockrect)
+        dcolor = QColor(Config.digitalcolor).darker(0).name()
+        lcolor = QColor(Config.digitalcolor).lighter(120).name()
+        clockface.setStyleSheet(
+            "#clockface { background-color: transparent; font-family:sans-serif;" +
+            " font-weight: light; color: " +
+            lcolor +
+            "; background-color: transparent; font-size: " +
+            str(int(Config.digitalsize * xscale)) +
+            "px; " +
+            Config.fontattr +
+            "}")
+        clockface.setAlignment(Qt.AlignCenter)
+        clockface.setGeometry(clockrect)
+        glow = QtGui.QGraphicsDropShadowEffect()
+        glow.setOffset(0)
+        glow.setBlurRadius(50)
+        glow.setColor(QColor(dcolor))
+        clockface.setGraphicsEffect(glow)
 
+if Config.radarEnabled:
+    radar1rect = QtCore.QRect(3 * xscale, 344 * yscale, 300 * xscale, 275 * yscale)
+    objradar1 = Radar(frame1, Config.radar1, radar1rect, "radar1")
 
-radar1rect = QtCore.QRect(3 * xscale, 344 * yscale, 300 * xscale, 275 * yscale)
-objradar1 = Radar(frame1, Config.radar1, radar1rect, "radar1")
+    radar2rect = QtCore.QRect(3 * xscale, 622 * yscale, 300 * xscale, 275 * yscale)
+    objradar2 = Radar(frame1, Config.radar2, radar2rect, "radar2")
 
-radar2rect = QtCore.QRect(3 * xscale, 622 * yscale, 300 * xscale, 275 * yscale)
-objradar2 = Radar(frame1, Config.radar2, radar2rect, "radar2")
+    radar3rect = QtCore.QRect(13 * xscale, 50 * yscale, 700 * xscale, 700 * yscale)
+    objradar3 = Radar(frame2, Config.radar3, radar3rect, "radar3")
 
-radar3rect = QtCore.QRect(13 * xscale, 50 * yscale, 700 * xscale, 700 * yscale)
-objradar3 = Radar(frame2, Config.radar3, radar3rect, "radar3")
-
-radar4rect = QtCore.QRect(726 * xscale, 50 * yscale,
-                          700 * xscale, 700 * yscale)
-objradar4 = Radar(frame2, Config.radar4, radar4rect, "radar4")
+    radar4rect = QtCore.QRect(726 * xscale, 50 * yscale,
+                              700 * xscale, 700 * yscale)
+    objradar4 = Radar(frame2, Config.radar4, radar4rect, "radar4")
 
 
 datex = QtGui.QLabel(frame1)
@@ -1106,45 +1108,45 @@ temp.setStyleSheet("#temp { font-family:sans-serif; color: " +
 temp.setAlignment(Qt.AlignHCenter | Qt.AlignTop)
 temp.setGeometry(0, height - 100, width, 50)
 
+if Config.weatherEnabled:
+    forecast = []
+    for i in range(0, 9):
+        lab = QtGui.QLabel(frame1)
+        lab.setObjectName("forecast" + str(i))
+        lab.setStyleSheet("QWidget { background-color: transparent; color: " +
+                          Config.textcolor +
+                          "; font-size: " +
+                          str(int(20 * xscale)) +
+                          "px; " +
+                          Config.fontattr +
+                          "}")
+        lab.setGeometry(1137 * xscale, i * 100 * yscale,
+                        300 * xscale, 100 * yscale)
 
-forecast = []
-for i in range(0, 9):
-    lab = QtGui.QLabel(frame1)
-    lab.setObjectName("forecast" + str(i))
-    lab.setStyleSheet("QWidget { background-color: transparent; color: " +
-                      Config.textcolor +
-                      "; font-size: " +
-                      str(int(20 * xscale)) +
-                      "px; " +
-                      Config.fontattr +
-                      "}")
-    lab.setGeometry(1137 * xscale, i * 100 * yscale,
-                    300 * xscale, 100 * yscale)
+        icon = QtGui.QLabel(lab)
+        icon.setStyleSheet("#icon { background-color: transparent; }")
+        icon.setGeometry(0, 0, 100 * xscale, 100 * yscale)
+        icon.setObjectName("icon")
 
-    icon = QtGui.QLabel(lab)
-    icon.setStyleSheet("#icon { background-color: transparent; }")
-    icon.setGeometry(0, 0, 100 * xscale, 100 * yscale)
-    icon.setObjectName("icon")
+        wx = QtGui.QLabel(lab)
+        wx.setStyleSheet("#wx { background-color: transparent; }")
+        wx.setGeometry(100 * xscale, 10 * yscale, 200 * xscale, 20 * yscale)
+        wx.setObjectName("wx")
 
-    wx = QtGui.QLabel(lab)
-    wx.setStyleSheet("#wx { background-color: transparent; }")
-    wx.setGeometry(100 * xscale, 10 * yscale, 200 * xscale, 20 * yscale)
-    wx.setObjectName("wx")
+        wx2 = QtGui.QLabel(lab)
+        wx2.setStyleSheet("#wx2 { background-color: transparent; }")
+        wx2.setGeometry(100 * xscale, 30 * yscale, 200 * xscale, 100 * yscale)
+        wx2.setAlignment(Qt.AlignLeft | Qt.AlignTop)
+        wx2.setWordWrap(True)
+        wx2.setObjectName("wx2")
 
-    wx2 = QtGui.QLabel(lab)
-    wx2.setStyleSheet("#wx2 { background-color: transparent; }")
-    wx2.setGeometry(100 * xscale, 30 * yscale, 200 * xscale, 100 * yscale)
-    wx2.setAlignment(Qt.AlignLeft | Qt.AlignTop)
-    wx2.setWordWrap(True)
-    wx2.setObjectName("wx2")
+        day = QtGui.QLabel(lab)
+        day.setStyleSheet("#day { background-color: transparent; }")
+        day.setGeometry(100 * xscale, 75 * yscale, 200 * xscale, 25 * yscale)
+        day.setAlignment(Qt.AlignRight | Qt.AlignBottom)
+        day.setObjectName("day")
 
-    day = QtGui.QLabel(lab)
-    day.setStyleSheet("#day { background-color: transparent; }")
-    day.setGeometry(100 * xscale, 75 * yscale, 200 * xscale, 25 * yscale)
-    day.setAlignment(Qt.AlignRight | Qt.AlignBottom)
-    day.setObjectName("day")
-
-    forecast.append(lab)
+        forecast.append(lab)
 
 manager = QtNetwork.QNetworkAccessManager()
 
